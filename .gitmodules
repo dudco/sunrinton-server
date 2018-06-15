@@ -1,0 +1,3 @@
+[submodule "sunrinton-client"]
+	path = sunrinton-client
+	url = https://github.com/dudco/sunrinton-client.git
