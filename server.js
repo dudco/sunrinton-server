@@ -23,12 +23,15 @@ const log = require('simple-node-logger').createSimpleLogger({
 
 mongoose.connect('mongodb://localhost/sunrinton');
 
+const helmet = require('helmet');
+app.use(helmet());
+
 app.set("port", process.env.PORT || 3000);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 if (process.env.NODE_ENV === "production") {
-    app.use(express.static("client/build"));
+    app.use(express.static("sunrinton-client/build"));
 }
 
 app.get('/api/test', (req, res) => {
@@ -55,7 +58,7 @@ app.post('/api/apply', upload.single('portpolio'), (req, res) => {
             team: team._id,
             role: req.body.role,
             project: req.body.project,
-            portpolio: req.file.path
+            portpolio: typeof req.file.path !== "undefined" ? req.file.path : "null",
         });
         team.users.push(user._id)
         team.save();
