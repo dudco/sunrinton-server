@@ -50,6 +50,7 @@ app.post('/api/apply', upload.single('portpolio'), (req, res) => {
             return team.save();
         }
     }).then(team => {
+        console.log(req.file);
         if(!team) throw Error("DB Nout Fond - User")
         const user = new User({
             name: req.body.name,
@@ -58,7 +59,7 @@ app.post('/api/apply', upload.single('portpolio'), (req, res) => {
             team: team._id,
             role: req.body.role,
             project: req.body.project,
-            portpolio: typeof req.file.path !== "undefined" ? req.file.path : "null",
+            portpolio: typeof req.file !== "undefined" ? req.file.path : "null",
         });
         team.users.push(user._id)
         team.save();
