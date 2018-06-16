@@ -13,6 +13,7 @@ const storage = multer.diskStorage({
     },
 });
 const upload = multer({ storage: storage });
+const path = require('path');
 const User = require("./models/User");
 const Team = require("./models/Team");
 
@@ -50,7 +51,6 @@ app.post('/api/apply', upload.single('portpolio'), (req, res) => {
             return team.save();
         }
     }).then(team => {
-        console.log(req.file);
         if(!team) throw Error("DB Nout Fond - User")
         const user = new User({
             name: req.body.name,
@@ -76,6 +76,10 @@ app.post('/api/apply', upload.single('portpolio'), (req, res) => {
         }
     })
 })
+
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '.', 'sunrinton-client', 'build', 'index.html'));
+});
 
 app.listen(app.get("port"), () => {
     console.log(`Find the server at: http://localhost:${app.get("port")}/`); // eslint-disable-line no-console
