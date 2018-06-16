@@ -9,7 +9,7 @@ const storage = multer.diskStorage({
     },
     filename: function (req, file, cb) {
         console.log(req.body);
-        cb(null, `${req.body.team}(${req.body.name})-${file.originalname}`);
+        cb(null, `${req.body.name}(${req.body.team})-${file.originalname}`);
     },
 });
 const upload = multer({ storage: storage });
@@ -28,7 +28,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 if (process.env.NODE_ENV === "production") {
-    app.use(express.static("client/build"));
+    app.use(express.static("sunrinton-client/build"));
 }
 
 app.get('/api/test', (req, res) => {
