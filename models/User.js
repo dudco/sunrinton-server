@@ -18,7 +18,10 @@ const User = new Schema({
     team: {type: Schema.Types.ObjectId, ref: 'team'},
     role: {type: String},
     project: {type: String},
-    portpolio: {type: String}
+    portpolio: {type: String},
+    sId: {type: Number, unique: true},
+    type: {type: String},
+    size: {type: String}
 });
 
 module.exports = mongoose.model('user', User);
