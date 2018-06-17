@@ -118,8 +118,10 @@ app.post('/api/apply', upload.single('portpolio'), (req, res) => {
         log.info(`[${ip}]${user.name} - save success`)
         res.status(200).send({ "message": "success" });
     }).catch(e => {
-        if (e) {
-            console.log(e.message);
+        if (e.code === 11000) {
+            res.status(202).send({ "message": "Server Err Occur!!" });
+        } else {
+            console.log(e);
             res.status(400).send({ "message": "Server Err Occur!!" });
         }
     })
