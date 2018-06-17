@@ -36,11 +36,26 @@ if (process.env.NODE_ENV === "production") {
 }
 
 app.get('/api/test', (req, res) => {
-    console.log("asdfasdfasdfa!!");
+var ip;
+if (req.headers['x-forwarded-for']) {
+    ip = req.headers['x-forwarded-for'].split(",")[0];
+} else if (req.connection && req.connection.remoteAddress) {
+    ip = req.connection.remoteAddress;
+} else {
+    ip = req.ip;
+}console.log("connected client IP is *********************" + ip);
     res.send("Server Connected")
 })
 
 app.post('/api/apply', upload.single('portpolio'), (req, res) => {
+var ip;
+if (req.headers['x-forwarded-for']) {
+    ip = req.headers['x-forwarded-for'].split(",")[0];
+} else if (req.connection && req.connection.remoteAddress) {
+    ip = req.connection.remoteAddress;
+} else {
+    ip = req.ip;
+}
     Team.findOne({ name: req.body.team }).then(team => {
         if (team) {
             return team;
@@ -67,7 +82,7 @@ app.post('/api/apply', upload.single('portpolio'), (req, res) => {
     }).then(user => {
         if(!user) throw Error("DB Nout Fond - User")
         console.log(`${Date.now()}::save success - ${user.name}`)
-        log.info(`${user.name} - save success`)
+        log.info(`[${ip}]${user.name} - save success`)
         res.status(200).send({"message": "success"});
     }).catch(e => {
         if(e) {
