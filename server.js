@@ -23,7 +23,7 @@ const log = require('simple-node-logger').createSimpleLogger({
     timestampFormat: 'YYYY-MM-DD HH:mm:ss.SSS'
 });
 
-mongoose.connect('mongodb://localhost/sunrinton2');
+mongoose.connect('mongodb://localhost/sunrinton3');
 
 const helmet = require('helmet');
 app.use(helmet());
