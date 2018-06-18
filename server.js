@@ -91,7 +91,7 @@ app.post('/api/apply', upload.single('portpolio'), (req, res) => {
             return team;
         } else {
             const team = new Team({
-                name: req.body.team
+                name: req.body.team.replace(/\s/gi, "")
             });
             return team.save();
         }
