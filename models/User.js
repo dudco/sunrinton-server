@@ -21,7 +21,8 @@ const User = new Schema({
     portpolio: {type: String},
     sId: {type: Number, unique: true},
     type: {type: String},
-    size: {type: String}
+    size: {type: String},
+    isCheck: {type: Boolean, default: false}
 });
 
 module.exports = mongoose.model('user', User);
