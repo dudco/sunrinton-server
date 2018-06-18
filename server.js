@@ -86,7 +86,7 @@ app.post('/api/apply', upload.single('portpolio'), (req, res) => {
     } else {
         ip = req.ip;
     }
-    Team.findOne({ name: req.body.team }).then(team => {
+    Team.findOne({ name: req.body.team.replace(/\s/gi, "") }).then(team => {
         if (team) {
             return team;
         } else {
