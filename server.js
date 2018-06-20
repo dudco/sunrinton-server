@@ -35,6 +35,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 if (process.env.NODE_ENV === "production") {
     app.use(express.static("sunrinton-client/build"));
+    app.use("/PortPolio", express.static("PortPolio/"));
 }
 
 app.get('/api/test', (req, res) => {
