@@ -13,8 +13,8 @@
   },
   "scripts": {
     "start": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "node server.js",
+    "server": "cross-env PASS=Sunrin!@#4th node server.js",
     "client": "node start_client.js",
-    "prod": "cross-env PORT=80 NODE_ENV=production node server.js"
+    "prod": "cross-env PASS=Sunrin!@#4th PORT=80 NODE_ENV=production node server.js"
   }
 }
