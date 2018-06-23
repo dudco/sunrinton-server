@@ -13,9 +13,10 @@ const storage = multer.diskStorage({
         cb(null, `${req.body.name}(${req.body.team})-${file.originalname}`);
     },
 });
-
 const upload = multer({ storage: storage });
 const path = require('path');
+const nodeZip = require('node-zip');
+const fs = require('fs');
 const User = require("./models/User");
 const Team = require("./models/Team");
 
@@ -38,9 +39,10 @@ app.use(session({
     saveUninitialized: true
 }));
 
+app.use("/PortPolio", express.static("PortPolio/"));
+
 if (process.env.NODE_ENV === "production") {
     app.use(express.static("sunrinton-client/build"));
-    app.use("/PortPolio", express.static("PortPolio/"));
 }
 
 app.get('/api/test', (req, res) => {
@@ -60,6 +62,18 @@ app.get('/api/user/:id', (req, res) => {
     User.findOne({ sId: req.params.id }).populate('team').then(user => {
         if (user) res.status(200).json({ name: user.name, team: user.team.name })
         else res.status(201).json({ message: 'not found' })
+    })
+})
+
+app.get('/api/team/:name', (req, res) => {
+    Team.findOne({name: req.params.name}).populate('users').then(team => {
+        const zip = new nodeZip();
+        const pp = team.users.map((user) => {
+            zip.file(user.portpolio.replace("PortPolio", `${req.params.name}`), fs.readFileSync(user.portpolio));
+        })
+        var data = zip.generate({base64:false, compression:'DEFLATE'}); 
+        fs.writeFileSync(`PortPolio/${req.params.name}.zip`, data, 'binary'); 
+        res.send(`PortPolio/${req.params.name}.zip`);
     })
 })
 
