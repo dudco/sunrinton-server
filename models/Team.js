@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const Team = new Schema({
     name: {type: String, required: true},
-    users: {type: [Schema.Types.ObjectId], ref: 'user'},
+    users: [{type: Schema.Types.ObjectId, ref: 'user'}],
     isPass: {type: Boolean, default: false},
 });
 

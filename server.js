@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const session = require('express-session');
 const multer = require('multer');
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -12,11 +13,11 @@ const storage = multer.diskStorage({
         cb(null, `${req.body.name}(${req.body.team})-${file.originalname}`);
     },
 });
+
 const upload = multer({ storage: storage });
 const path = require('path');
 const User = require("./models/User");
 const Team = require("./models/Team");
-
 
 const log = require('simple-node-logger').createSimpleLogger({
     logFilePath: 'info.log',
@@ -27,11 +28,15 @@ mongoose.connect('mongodb://localhost/sunrinton3');
 
 const helmet = require('helmet');
 app.use(helmet());
-
 app.set("port", process.env.PORT || 3000);
 app.set("pass", process.env.PASS || "TEST*2")
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(session({
+    secret: '@#@$MYSIGN#@$#$',
+    resave: false,
+    saveUninitialized: true
+}));
 
 if (process.env.NODE_ENV === "production") {
     app.use(express.static("sunrinton-client/build"));
@@ -46,18 +51,21 @@ app.get('/api/test', (req, res) => {
         ip = req.connection.remoteAddress;
     } else {
         ip = req.ip;
-    } 
+    }
     console.log("connected client IP is *********************" + ip);
     res.send("Server Connected")
 })
 
 app.get('/api/user/:id', (req, res) => {
-    User.findOne({sId: req.params.id}).populate('team').then(user => {
-        if(user) res.status(200).json({name: user.name, team: user.team.name})
-        else res.status(201).json({message: 'not found'})
+    User.findOne({ sId: req.params.id }).populate('team').then(user => {
+        if (user) res.status(200).json({ name: user.name, team: user.team.name })
+        else res.status(201).json({ message: 'not found' })
     })
-}) 
+})
 
+app.post('/api/isAdmin', (req, res) => {
+    res.status(200).send(req.session.admin);
+})
 app.post('/api/users', (req, res) => {
     var ip;
     if (req.headers['x-forwarded-for']) {
@@ -66,17 +74,40 @@ app.post('/api/users', (req, res) => {
         ip = req.connection.remoteAddress;
     } else {
         ip = req.ip;
-    } 
-    console.log("ADMIN :::: " + ip + "      " + req.body.passwd);
+    }
+    console.log("ADMIN :::: " + ip + "      " + req.body.passwd + "     " + req.session.admin);
 
-    if(req.body.passwd === app.get("pass")) {
+    if (req.body.passwd === app.get("pass") || req.session.admin) {
         User.find().populate('team').then(users => {
             res.status(200).send(users);
         });
+        req.session.admin = true;
     } else {
-        res.status(204).send({message: "you are not admin!!"});
+        res.status(204).send({ message: "you are not admin!!" });
     }
 })
+
+app.post('/api/teams', (req, res) => {
+    var ip;
+    if (req.headers['x-forwarded-for']) {
+        ip = req.headers['x-forwarded-for'].split(",")[0];
+    } else if (req.connection && req.connection.remoteAddress) {
+        ip = req.connection.remoteAddress;
+    } else {
+        ip = req.ip;
+    }
+    console.log("ADMIN :::: " + ip + "      " + req.body.passwd + "     " + req.session.admin);
+
+    if (req.body.passwd === app.get("pass") || req.session.admin) {
+        Team.find().populate('users').then(teams => {
+            res.status(200).json(teams);
+        })
+        req.session.admin = true;
+    } else {
+        res.status(204).send({ message: "you are not admin!!" });
+    }
+})
+
 
 app.post('/api/apply', upload.single('portpolio'), (req, res) => {
     var ip;
