@@ -80,6 +80,18 @@ app.get('/api/team/:name', (req, res) => {
 app.post('/api/isAdmin', (req, res) => {
     res.status(200).send(req.session.admin);
 })
+
+app.get('/api/pass/:name', (req, res) => {
+    Team.findOne({name: {$regex: new RegExp( '^' + req.params.name.replace(/\s/gi, ""), 'i')}}).then(team => {
+        if(team) {
+            if(team.isPass) res.status(200).send({team: team.name, isPass:true});
+            else res.status(200).send({team: team.name, isPass: false});
+        } else {
+            res.status(200).send({team: "none", isPass: false});
+        }
+    })
+});
+
 app.post('/api/users', (req, res) => {
     var ip;
     if (req.headers['x-forwarded-for']) {
