@@ -105,12 +105,27 @@ app.post('/api/users', (req, res) => {
 
     if (req.body.passwd === app.get("pass") || req.session.admin) {
         User.find().populate('team').then(users => {
-            res.status(200).send(users);
+            let ret = users.filter((user) => {
+                return user.team.isPass
+            })
+            res.status(200).send(ret);
         });
         req.session.admin = true;
     } else {
         res.status(204).send({ message: "you are not admin!!" });
     }
+})
+
+app.post('/api/check/:name', (req, res) => {
+    User.findOne({name: req.params.name}).then(user => {
+        user.isCheck = true;
+        return user.save();
+    }).then(user => {
+        if(!user) throw new Error("Err!");
+        else res.status(200).json({message: "okay"});
+    }).catch(e => {
+        res.status(500).json({message: e.message});
+    })
 })
 
 app.post('/api/teams', (req, res) => {
