@@ -149,6 +149,11 @@ app.post('/api/teams', (req, res) => {
     }
 })
 
+app.get('/api/time', (req, res) => {
+    const date = Date.now();
+    console.log(date);
+    res.status(200).send({date});
+})
 
 app.post('/api/apply', upload.single('portpolio'), (req, res) => {
     var ip;
